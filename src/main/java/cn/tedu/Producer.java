@@ -18,7 +18,7 @@ public class Producer {
         //2.定义队列
         //指定用来发送消息的队列，如果队列不存在，服务器自动创建队列
         //如果已存在，直接使用队列
-        c.queueDeclare("helloword",
+        c.queueDeclare("helloWorld",
                 false,
                 false,
                 false,
