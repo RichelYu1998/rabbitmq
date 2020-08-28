@@ -23,7 +23,7 @@ public class Producer {
                 false,
                 null);
         //3.发送信息
-        c.basicPublish("", "helloworld", null, "Hello world!".getBytes());
+        c.basicPublish("", "helloWorld", null, "Hello world!".getBytes());
         System.out.println("消息已发送");
         c.close();
     }
