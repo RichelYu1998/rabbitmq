@@ -17,7 +17,7 @@ public class Producer {
         Connection c = f.newConnection();
         Channel ch = c.createChannel();
         //参数:queue,durable,exclusive,autoDelete,arguments
-        ch.queueDeclare("helloworld", false,false,false,null);
+        ch.queueDeclare("helloWorld", false,false,false,null);
         while (true) {
             //控制台输入的消息发送到rabbitmq
             System.out.print("输入消息: ");
@@ -27,7 +27,7 @@ public class Producer {
                 break;
             }
             //参数:exchage,routingKey,props,body
-            ch.basicPublish("", "helloworld", null, msg.getBytes());
+            ch.basicPublish("", "helloWorld", null, msg.getBytes());
             System.out.println("消息已发送: "+msg);
         }
         c.close();
