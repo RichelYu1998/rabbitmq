@@ -1,7 +1,6 @@
 package cn.tedu;
 
 import com.rabbitmq.client.*;
-
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
@@ -33,7 +32,6 @@ public class Consumer {
             public void handle(String consumerTag) throws IOException {
             }
         };
-
-        ch.basicConsume("helloworld", true, callback, cancel);
+        ch.basicConsume("helloWorld", true, callback, cancel);
     }
 }
