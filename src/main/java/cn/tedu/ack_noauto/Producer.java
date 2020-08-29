@@ -1,4 +1,4 @@
-package cn.tedu.work2;
+package cn.tedu.ack_noauto;
 
 
 import com.rabbitmq.client.Channel;

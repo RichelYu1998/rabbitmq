@@ -1,4 +1,4 @@
-package cn.tedu.work1;
+package cn.tedu.base;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;

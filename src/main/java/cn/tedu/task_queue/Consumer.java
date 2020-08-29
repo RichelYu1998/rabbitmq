@@ -1,4 +1,4 @@
-package cn.tedu.work4;
+package cn.tedu.task_queue;
 
 import com.rabbitmq.client.*;
 
@@ -12,21 +12,27 @@ public class Consumer {
         f.setPassword("admin");
         Connection c = f.newConnection();
         Channel ch = c.createChannel();
-        //定义名字为 logs 的交换机, 它的类型是 fanout
-        ch.exchangeDeclare("logs", "fanout");
-        //自动生成对列名,
-        //非持久,独占,自动删除
-        String queueName = ch.queueDeclare().getQueue();
-        //把该队列,绑定到 logs 交换机
-        //对于 fanout 类型的交换机, routingKey会被忽略，不允许null值
-        ch.queueBind(queueName, "logs", "");
+        //第二个参数设置队列持久化
+        ch.queueDeclare("task_queue",true,false,false,null);
         System.out.println("等待接收数据");
+        ch.basicQos(1); //一次只接收一条消息
         //收到消息后用来处理消息的回调对象
         DeliverCallback callback = new DeliverCallback() {
             @Override
             public void handle(String consumerTag, Delivery message) throws IOException {
                 String msg = new String(message.getBody(), "UTF-8");
-                System.out.println("收到: " + msg);
+                System.out.println("收到: "+msg);
+                for (int i = 0; i < msg.length(); i++) {
+                    if (msg.charAt(i)=='.') {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+                System.out.println("处理结束");
+                //发送回执
+                ch.basicAck(message.getEnvelope().getDeliveryTag(), false);
             }
         };
         //消费者取消时的回调对象
@@ -35,6 +41,7 @@ public class Consumer {
             public void handle(String consumerTag) throws IOException {
             }
         };
-        ch.basicConsume(queueName, true, callback, cancel);
+        //autoAck设置为false,则需要手动确认发送回执
+        ch.basicConsume("task_queue", false, callback, cancel);
     }
 }

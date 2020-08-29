@@ -1,38 +1,29 @@
-package cn.tedu.work3;
+package cn.tedu.base;
 
 import com.rabbitmq.client.*;
-
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 public class Consumer {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException, TimeoutException {
+        //连接工厂
         ConnectionFactory f = new ConnectionFactory();
         f.setHost("192.168.64.140");
         f.setUsername("admin");
         f.setPassword("admin");
+        //建立连接
         Connection c = f.newConnection();
+        //建立信道
         Channel ch = c.createChannel();
-        //第二个参数设置队列持久化
-        ch.queueDeclare("task_queue",true,false,false,null);
+        //声明队列,如果该队列已经创建过,则不会重复创建
+        ch.queueDeclare("helloWorld",false,false,false,null);
         System.out.println("等待接收数据");
-        ch.basicQos(1); //一次只接收一条消息
         //收到消息后用来处理消息的回调对象
         DeliverCallback callback = new DeliverCallback() {
             @Override
             public void handle(String consumerTag, Delivery message) throws IOException {
                 String msg = new String(message.getBody(), "UTF-8");
                 System.out.println("收到: "+msg);
-                for (int i = 0; i < msg.length(); i++) {
-                    if (msg.charAt(i)=='.') {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-                }
-                System.out.println("处理结束");
-                //发送回执
-                ch.basicAck(message.getEnvelope().getDeliveryTag(), false);
             }
         };
         //消费者取消时的回调对象
@@ -41,7 +32,6 @@ public class Consumer {
             public void handle(String consumerTag) throws IOException {
             }
         };
-        //autoAck设置为false,则需要手动确认发送回执
-        ch.basicConsume("task_queue", false, callback, cancel);
+        ch.basicConsume("helloWorld", true, callback, cancel);
     }
 }

@@ -1,4 +1,4 @@
-package cn.tedu.work3;
+package cn.tedu.task_queue;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
