@@ -1,4 +1,4 @@
-package cn.tedu.exchange_bro;
+package cn.tedu.Direct_exchange;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

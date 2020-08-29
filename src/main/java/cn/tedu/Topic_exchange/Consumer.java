@@ -1,8 +1,9 @@
-package cn.tedu.exchange_bro;
+package cn.tedu.Topic_exchange;
 
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Consumer {
     public static void main(String[] args) throws Exception {
@@ -12,21 +13,25 @@ public class Consumer {
         f.setPassword("admin");
         Connection c = f.newConnection();
         Channel ch = c.createChannel();
-        //定义名字为 logs 的交换机, 它的类型是 fanout
-        ch.exchangeDeclare("logs", "fanout");
+        ch.exchangeDeclare("topic_logs", BuiltinExchangeType.TOPIC);
         //自动生成对列名,
         //非持久,独占,自动删除
         String queueName = ch.queueDeclare().getQueue();
-        //把该队列,绑定到 logs 交换机
-        //对于 fanout 类型的交换机, routingKey会被忽略，不允许null值
-        ch.queueBind(queueName, "logs", "");
+        System.out.println("输入bindingKey,用空格隔开:");
+        String[] a = new Scanner(System.in).nextLine().split("\\s");
+        //把该队列,绑定到 topic_logs 交换机
+        //允许使用多个 bindingKey
+        for (String bindingKey : a) {
+            ch.queueBind(queueName, "topic_logs", bindingKey);
+        }
         System.out.println("等待接收数据");
         //收到消息后用来处理消息的回调对象
         DeliverCallback callback = new DeliverCallback() {
             @Override
             public void handle(String consumerTag, Delivery message) throws IOException {
                 String msg = new String(message.getBody(), "UTF-8");
-                System.out.println("收到: " + msg);
+                String routingKey = message.getEnvelope().getRoutingKey();
+                System.out.println("收到: "+routingKey+" - "+msg);
             }
         };
         //消费者取消时的回调对象
